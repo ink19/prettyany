@@ -1,3 +1,3 @@
-module github/ink19/prettyany
+module github.com/ink19/prettyany
 
 go 1.20
