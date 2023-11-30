@@ -3,6 +3,7 @@ package prettyany
 import (
 	"fmt"
 	"reflect"
+	"sort"
 )
 
 
@@ -67,6 +68,9 @@ func (p *PrettyAny) printPointer(typePrefix string, val reflect.Value) *prettyAn
 
 func (p *PrettyAny) printMap(typePrefix string, val reflect.Value) *prettyAnyFieldType {
 	keys := val.MapKeys()
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i].String() > keys[j].String()
+	})
 	field := NewTextFmtField(typePrefix + val.Type().String(), "")
 	for _, item := range keys {
 		iVal := val.MapIndex(item)
@@ -90,10 +94,16 @@ func (p *PrettyAny) printSlice(typePrefix string, val reflect.Value) *prettyAnyF
 func (p *PrettyAny) printStruct(typePrefix string, val reflect.Value) *prettyAnyFieldType {
 	fieldNum := val.NumField()
 	field := NewTextFmtField(typePrefix + val.Type().String(), "")
+	fieldNames := []string{}
 	for i := 0; i < fieldNum; i++ {
-		iFieldName := val.Type().Field(i).Name
-		iField := p.dispatch("", val.Field(i))
-		field.AddElem(iFieldName, iField)
+		fieldNames = append(fieldNames, val.Type().Field(i).Name)
+	}
+	sort.Slice(fieldNames, func(i, j int) bool {
+		return fieldNames[i] > fieldNames[j]
+	})
+	for _, fieldName := range fieldNames {
+		iField := p.dispatch("", val.FieldByName(fieldName))
+		field.AddElem(fieldName, iField)
 	}
 	return field
 }
