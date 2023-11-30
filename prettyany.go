@@ -68,7 +68,7 @@ func (p *PrettyAny) printPointer(typePrefix string, val reflect.Value) *prettyAn
 func (p *PrettyAny) printMap(typePrefix string, val reflect.Value) *prettyAnyFieldType {
 	keys := val.MapKeys()
 	sort.Slice(keys, func(i, j int) bool {
-		return keys[i].String() > keys[j].String()
+		return keys[i].String() < keys[j].String()
 	})
 	field := NewTextFmtField(typePrefix+val.Type().String(), "")
 	for _, item := range keys {
@@ -98,7 +98,7 @@ func (p *PrettyAny) printStruct(typePrefix string, val reflect.Value) *prettyAny
 		fieldNames = append(fieldNames, val.Type().Field(i).Name)
 	}
 	sort.Slice(fieldNames, func(i, j int) bool {
-		return fieldNames[i] > fieldNames[j]
+		return fieldNames[i] < fieldNames[j]
 	})
 	for _, fieldName := range fieldNames {
 		iField := p.dispatch("", val.FieldByName(fieldName))
