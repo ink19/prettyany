@@ -18,16 +18,16 @@ func NewPrettyAnyTextFmt() PrettyAnyFmt {
 }
 
 func (p *PrettyAnyFmtText) String(field *prettyAnyFieldType) string {
-	return p.string(0, "", field)
+	return p.string(0, field)
 }
 
-func (p *PrettyAnyFmtText) string(index int, name string, field *prettyAnyFieldType) string {
+func (p *PrettyAnyFmtText) string(index int, field *prettyAnyFieldType) string {
 	lineBuilder := &strings.Builder{}
 	lineBuilder.WriteString(strings.Repeat("\t", index))
-	lineBuilder.WriteString(fmt.Sprintf("%s(%s):%s\n", name, field.fieldType, field.val))
+	lineBuilder.WriteString(fmt.Sprintf("%s(%s):%s\n", field.name, field.fieldType, field.val))
 
-	for iname, item := range field.fields {
-		lineBuilder.WriteString(p.string(index + 1, iname, item))
+	for _, item := range field.fields {
+		lineBuilder.WriteString(p.string(index + 1, item))
 	}
 
 	return lineBuilder.String()
