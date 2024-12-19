@@ -79,7 +79,23 @@ func (p *PrettyAny) printMap(typePrefix string, val reflect.Value) *prettyAnyFie
 	return field
 }
 
+
 func (p *PrettyAny) printSlice(typePrefix string, val reflect.Value) *prettyAnyFieldType {
+	switch val.Type().Elem().Kind() {
+	// 针对[]byte、[]int8、[]uint8等类型，直接输出hex
+	case reflect.Uint8:
+		field := NewTextFmtField(typePrefix+val.Type().String(), fmt.Sprintf("%x", val.Bytes()))
+		return field
+	case reflect.Int8:
+		cval := make([]byte, 0, val.Len())
+		for _, item := range val.Interface().([]int8) {
+			cval = append(cval, byte(item))
+		}
+		field := NewTextFmtField(typePrefix+val.Type().String(), fmt.Sprintf("%x", cval))
+		return field
+	//TODO: 针对[]int、[]uint等类型，直接平铺输出
+	}
+
 	iNum := val.Len()
 	field := NewTextFmtField(typePrefix+val.Type().String(), "")
 	for i := 0; i < iNum; i++ {
