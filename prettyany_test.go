@@ -6,29 +6,29 @@ import (
 )
 
 type A struct {
-	A int
-	B *map[string]int
-	C interface{}
-	D []byte
-	E []int8
-	F []uint8
-	G []rune
+	Int int
+	Map *map[string]int
+	Interface interface{}
+	Bytes []byte
+	Int8s []int8
+	Uint8s []uint8
+	Runes []rune
 }
 
 func TestPrettyAny_Pretty(t *testing.T) {
 	a := A{
-		A: 1,
-		B: &map[string]int {
+		Int: 1,
+		Map: &map[string]int {
 			"123": 123,
 			"876": 876,
 		},
-		C: func()error{
+		Interface: func()error{
 			return nil
 		},
-		D: []byte("123"),
-		E: []int8{1,2,3},
-		F: []uint8{'1','2','3'},
-		G: []rune("你好"),
+		Bytes: []byte("123"),
+		Int8s: []int8{1,2,3},
+		Uint8s: []uint8{'1','2','3'},
+		Runes: []rune("你好"),
 	}
 	t.Log(NewPrettyAny().Pretty(a))
 }

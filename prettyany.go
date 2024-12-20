@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+	"strings"
+
+	"golang.org/x/exp/constraints"
 )
 
 type PrettyAny struct{}
@@ -79,6 +82,55 @@ func (p *PrettyAny) printMap(typePrefix string, val reflect.Value) *prettyAnyFie
 	return field
 }
 
+func printIntergerArray[T constraints.Integer, S ~[]T](s S) string {
+	sb := &strings.Builder{}
+	for i, item := range s {
+		sb.WriteString(fmt.Sprintf("%d", item))
+		if i != len(s) - 1 {
+			sb.WriteString(",")
+		}
+	}
+	return sb.String()
+}
+
+func printFloatArray[T constraints.Float, S ~[]T](s S) string {
+	sb := &strings.Builder{}
+	for i, item := range s {
+		sb.WriteString(fmt.Sprintf("%f", item))
+		if i != len(s) - 1 {
+			sb.WriteString(",")
+		}
+	}
+	return sb.String()
+}
+
+func (p *PrettyAny) printSimpleSlice(s any) string {
+	switch sv := s.(type) {
+	case []int:
+		return printIntergerArray(sv)
+	case []uint:
+		return printIntergerArray(sv)
+	case []int16:
+		return printIntergerArray(sv)
+	case []uint16:
+		return printIntergerArray(sv)
+	case []int32:
+		return printIntergerArray(sv)
+	case []uint32:
+		return printIntergerArray(sv)
+	case []int64:
+		return printIntergerArray(sv)
+	case []uint64:
+		return printIntergerArray(sv)
+
+	case []float32:
+		return printFloatArray(sv)
+	case []float64:
+		return printFloatArray(sv)
+	default:
+		return "not support type"
+	}
+}
 
 func (p *PrettyAny) printSlice(typePrefix string, val reflect.Value) *prettyAnyFieldType {
 	switch val.Type().Elem().Kind() {
@@ -93,7 +145,10 @@ func (p *PrettyAny) printSlice(typePrefix string, val reflect.Value) *prettyAnyF
 		}
 		field := NewTextFmtField(typePrefix+val.Type().String(), fmt.Sprintf("%x", cval))
 		return field
-	//TODO: 针对[]int、[]uint等类型，直接平铺输出
+	// 针对[]int、[]uint等类型，直接平铺输出
+	case reflect.Int, reflect.Uint, reflect.Int16, reflect.Uint16, reflect.Int32, reflect.Uint32, reflect.Int64, reflect.Uint64, reflect.Float32, reflect.Float64:
+		field := NewTextFmtField(typePrefix+val.Type().String(), p.printSimpleSlice(val.Interface()))
+		return field
 	}
 
 	iNum := val.Len()
