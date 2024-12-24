@@ -13,6 +13,7 @@ type A struct {
 	Int8s []int8
 	Uint8s []uint8
 	Runes []rune
+	Float64ss [][]float64
 }
 
 func TestPrettyAny_Pretty(t *testing.T) {
@@ -29,6 +30,10 @@ func TestPrettyAny_Pretty(t *testing.T) {
 		Int8s: []int8{1,2,3},
 		Uint8s: []uint8{'1','2','3'},
 		Runes: []rune("你好"),
+		Float64ss: [][]float64{
+			{1.1,2.2,3.3},
+			{1.1,2.2,3.3},
+		},
 	}
 	t.Log(NewPrettyAny().Pretty(a))
 }
