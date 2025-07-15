@@ -1,6 +1,4 @@
-### 简介
-
-用于打印各种变量
+### Usage
 
 ```go
 type A struct {
