@@ -62,6 +62,10 @@ func (p *PrettyAny) printDirect(typePrefix string, val reflect.Value) *prettyAny
 }
 
 func (p *PrettyAny) printPointer(typePrefix string, val reflect.Value) *prettyAnyFieldType {
+	if val.IsNil() {
+		field := NewTextFmtField(typePrefix+val.Type().Kind().String(), "nil")
+		return field
+	}
 	return p.dispatch("*"+typePrefix, val.Elem())
 }
 
